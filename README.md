@@ -10,3 +10,4 @@ Version 1.1.0 (17-8-2)
 <br>
 <br>使用主线程顺序执行代码
 <br>获取从豆瓣服务器上获取5个页面的JSON数据-依次取出json数据并解析为bean-从bean中取出所有的详情地址链接-HttpClient访问url-提取每个html中的剧情描述-存入Bean
+<br>② 运行时间 ：2min 15s
