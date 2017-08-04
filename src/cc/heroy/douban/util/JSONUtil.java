@@ -1,5 +1,6 @@
 package cc.heroy.douban.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 /**
@@ -13,7 +14,7 @@ public class JSONUtil {
 	 * 	将String 转换成JSON对象
 	 */
 	public static JSONObject toJSONObject(String str){
-		JSONObject obj = JSONObject.parseObject(str);
+		JSONObject obj = JSON.parseObject(str);
 		return obj ;
 	}
 	
