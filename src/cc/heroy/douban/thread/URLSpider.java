@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -20,23 +19,24 @@ public class URLSpider implements Runnable{
 
 	private final CloseableHttpClient httpClient ;
 	private final BlockingQueue<String> urls;
-	private final BlockingQueue<String> entitys ;
+	private final BlockingQueue<String> entitys1 ;
+	private final BlockingQueue<String> entitys2 ;
 	private final CountDownLatch startGate ;
 	private final CountDownLatch endGate ;
 	
-	public URLSpider(CloseableHttpClient httpCLient ,BlockingQueue<String> urls,BlockingQueue<String> entitys,CountDownLatch startGate,CountDownLatch endGate){
+	public URLSpider(CloseableHttpClient httpCLient ,BlockingQueue<String> urls,BlockingQueue<String> entitys1,BlockingQueue<String> entitys2,CountDownLatch startGate,CountDownLatch endGate){
 		this.httpClient = httpCLient;
 		this.urls = urls;
-		this.entitys = entitys;
+		this.entitys1 = entitys1;
+		this.entitys2 = entitys2;
 		this.startGate = startGate;
 		this.endGate = endGate ;
 	}
 	
 	@Override
 	public void run() {
-		System.out.println("******");
 		//等待startGate = 0
-System.out.println(startGate.getCount());
+System.out.println("URLSpider启动");
 		try{
 		startGate.await();
 		}catch(InterruptedException e){
@@ -56,11 +56,10 @@ System.out.println(startGate.getCount());
 		}
 		//endGate-1
 		endGate.countDown();
-		System.out.println("结束");
+System.out.println("URLSpider结束");
 	}
 	
 	private void spider(String url){
-System.out.println(url);
 		HttpGet get = new HttpGet(url);
 		//设置请求超时时间 5s
 		RequestConfig config = RequestConfig.custom().setConnectTimeout(5000).build();
@@ -69,7 +68,9 @@ System.out.println(url);
 		try{
 			response = httpClient.execute(get);
 			String content = EntityUtils.toString(response.getEntity());
-			entitys.put(content);
+			entitys1.put(url+"#"+content);
+			entitys2.put(url+"#"+content);
+System.out.println("提取："+url);
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{

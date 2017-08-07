@@ -1,17 +1,17 @@
 package cc.heroy.douban.thread;
 
-import java.io.IOException;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.ParseException;
-import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import cc.heroy.douban.util.FilterUtil;
 import cc.heroy.douban.util.RegexUtil;
 
 /**
@@ -46,8 +46,7 @@ public class URLAnalyzer implements Runnable{
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
-		
-		
+System.out.println("URLAnalyzer启动");
 		while(!entitys.isEmpty()){
 			try {
 				String content = entitys.take();
@@ -57,25 +56,29 @@ public class URLAnalyzer implements Runnable{
 			}
 		}
 		endGate.countDown();
+System.out.println("URLAnalyzer结束");
 	}
 	
 	
 	//解析entity的url
 	private void analyzer(String content){
-		try {
-//System.out.println(content);
-			Set<String> result = RegexUtil.URLRegex(content);
-//test
-			System.out.println(result.size());
-			Iterator<String> it = result.iterator();
-//			System.out.println("1111");
-			while(it.hasNext()){
-				System.out.println(it.next());
-			}
-			
-		} catch (ParseException e) {
-			e.printStackTrace();
+//test页面链接
+		
+		//将content转换成document对象
+		Document doc = Jsoup.parse(content);
+		//找到页面所有链接
+		Elements links = doc.select("a[href]");
+		
+		Set<String> set = new HashSet<String>();
+		for(Element e :links){
+			String url = e.attr("href");
+			set.add(url);
 		}
+		//判断url是否为电影详情页
+		set = RegexUtil.URLRegex(set);
+	
+		//去重
+		FilterUtil.URLFilter(set, urls, usedURLS);
 		
 	}
 }
