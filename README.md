@@ -27,7 +27,8 @@ Version 1.1.1 (17-8-7)
 <br>①项目使用多线程
 <br>②大量使用juc包容器
 <br>③添加页面url解析器，html解析器，url爬虫
-<br>
+<br>项目架构 ：
+![image](https://github.com/Alooooha/DoubanSpider/blob/master/img/Version1.1.1.png)
 <br>运行时间 ：1min 17s
 <br>
 <br>项目不足:
