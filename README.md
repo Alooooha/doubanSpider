@@ -1,4 +1,4 @@
-# DoubanSpider（豆瓣爬虫）
+# doubanspider（豆瓣爬虫）
 起因：
 ------
         学习《JAVA并发编程实践》时，发现里面的很多知识点多而实践很少，对于初学者不容易深入理解JAVA多线程。因为爬虫技术爬取数据量大，使用单线程不现实，因此计划使用JAVA多线程+爬虫技术完成一个高性能的爬虫工具。
@@ -39,4 +39,4 @@ Version 1.1.1 (17-8-7)
 <br>
 <br>更新(17-8-9)
 <br>为了解决频繁访问导致IP被封的问题，决定写一个WEB项目从网上爬取可用的高匿IP
-<br>[proxy_ip](http://www.baidu.com "IP代理器")
+项目：[proxy_ip](https://github.com/Alooooha/proxy_ip "IP扫描系统")
