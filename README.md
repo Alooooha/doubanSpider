@@ -27,7 +27,7 @@ Version 1.1.1 (17-8-7)
 <br>①项目使用多线程
 <br>②大量使用juc包容器
 <br>③添加页面url解析器，html解析器，url爬虫
-<br>项目架构 ：
+<br>项目逻辑 ：
 ![image](https://github.com/Alooooha/DoubanSpider/blob/master/img/Version1.1.1.png)
 <br>运行时间 ：1min 17s
 <br>
@@ -40,3 +40,16 @@ Version 1.1.1 (17-8-7)
 <br>更新(17-8-9)
 <br>为了解决频繁访问导致IP被封的问题，决定写一个WEB项目从网上爬取可用的高匿IP
 项目：[proxy_ip](https://github.com/Alooooha/proxy_ip "IP扫描系统")
+
+
+Version 2.0.0 (17-9-6)
+------
+①爬取豆瓣所有电影详情信息
+<br>
+<br>描述：
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;该版本解决了爬虫数据量不高，项目功能局限，未采用生产者消费者模型的问题。由于
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;另一项目“IP扫描系统”遇到些麻烦，没法得到其他代理IP，所以把爬虫设置了访问时间
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间隔3s。同时采用了广度优先遍历算法。
+<br>
+<br>项目逻辑 ：
+
