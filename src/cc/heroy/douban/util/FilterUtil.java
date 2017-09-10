@@ -9,7 +9,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *
  */
 public class FilterUtil {
-
 	/**
 	 * 将解析的url集合去重放入url队列
 	 * @param set :要处理的url
@@ -19,12 +18,16 @@ public class FilterUtil {
 	public static void URLFilter(Set<String> set ,BlockingQueue<String> urls,CopyOnWriteArraySet<String> usedURLS){
 		//set去重,放入urls队列
 		for(String url : set){
-			if(!urls.contains(url)){
-				urls.add(url);
+			if(!usedURLS.contains(url)){
+				try {
+					urls.put(url);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				usedURLS.add(url);
-System.out.println("添加url："+url);				
+System.out.println("添加："+url);				
 			}else{
-System.out.println("去重中 ："+url);
+//System.out.println("去重："+url);
 			}
 		}
 	}

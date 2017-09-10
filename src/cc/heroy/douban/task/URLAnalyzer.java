@@ -1,4 +1,4 @@
-package cc.heroy.douban.thread;
+package cc.heroy.douban.task;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,17 +22,19 @@ import cc.heroy.douban.util.RegexUtil;
  */
 public class URLAnalyzer implements Runnable{
 
-	private BlockingQueue<String> entitys ;
-	
+	private BlockingQueue<String> entitys1 ;
+	private BlockingQueue<String> entitys2 ;
 	private BlockingQueue<String> urls ;
-	
 	private CopyOnWriteArraySet<String> usedURLS;
-	
 	private CountDownLatch startGate ;
 	
+	//线程睡眠时间
+	long space = 2000L;
+	
 	CountDownLatch endGate ;
-	public URLAnalyzer(BlockingQueue<String> entitys,BlockingQueue<String> urls, CopyOnWriteArraySet<String> usedURLS,CountDownLatch startGate,CountDownLatch endGate){
-		this.entitys = entitys;
+	public URLAnalyzer(BlockingQueue<String> entitys1,BlockingQueue<String> entitys2,BlockingQueue<String> urls, CopyOnWriteArraySet<String> usedURLS,CountDownLatch startGate,CountDownLatch endGate){
+		this.entitys1 = entitys1;
+		this.entitys2 = entitys2;
 		this.urls = urls;
 		this.usedURLS = usedURLS;
 		this.startGate = startGate;
@@ -47,10 +49,11 @@ public class URLAnalyzer implements Runnable{
 			e1.printStackTrace();
 		}
 System.out.println("URLAnalyzer启动");
-		while(!entitys.isEmpty()){
+		while(!urls.isEmpty()||!entitys1.isEmpty()||!entitys2.isEmpty()){
 			try {
-				String content = entitys.take();
+				String content = entitys1.take();
 				analyzer(content);
+				Thread.sleep(space);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

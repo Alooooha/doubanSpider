@@ -1,7 +1,12 @@
-package cc.heroy.douban.thread;
+package cc.heroy.douban.task;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.CountDownLatch;
 
 import org.jsoup.Jsoup;
@@ -17,24 +22,47 @@ import cc.heroy.douban.bean.Movie;
  * 将movie存到vector容器
  */
 public class HTMLAnalyzer implements Runnable{
-	
-	private final BlockingQueue<String> entitys ;
-	
+
+	private final BlockingQueue<String> entitys1 ;
+	private final BlockingQueue<String> entitys2 ;
 	private final CountDownLatch startGate ;
 	private final CountDownLatch endGate ;
 	private final Vector<Movie> movies ;
+	private final BlockingQueue<String> urls;
+	CopyOnWriteArraySet<String> usedUrls = new CopyOnWriteArraySet<>();
+	//线程睡眠时间
+	long space = 2000L;
 	
-	public HTMLAnalyzer(BlockingQueue<String> entitys,CountDownLatch startGate , CountDownLatch endGate,Vector<Movie> movies){
-		this.entitys = entitys;
+	public HTMLAnalyzer(BlockingQueue<String> entitys1,BlockingQueue<String> entitys2 ,BlockingQueue<String> urls,CopyOnWriteArraySet<String> usedUrls ,CountDownLatch startGate , CountDownLatch endGate,Vector<Movie> movies){
+		this.entitys1 = entitys1;
+		this.entitys2 = entitys2;
+		this.usedUrls = usedUrls;
 		this.startGate = startGate;
 		this.endGate = endGate;
 		this.movies = movies;
+		this.urls = urls;
 	}
 	
 	@Override
 	public void run() {
+//创建目录
+		String path = "F:/movie";
+		File p = new File(path);
+		if(!p.exists()) {
+			//创建文件目录
+			p.mkdir();
+		}
+		FileWriter fw = null;
+		File f = new File(p,UUID.randomUUID()+".txt");
+		if(f.exists()) {
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		//等待startGate
-System.out.println(entitys.size());
+System.out.println(entitys2.size());
 		try {
 			startGate.await();
 		} catch (InterruptedException e1) {
@@ -42,10 +70,16 @@ System.out.println(entitys.size());
 		}
 		//启动
 System.out.println("HTMLAnalyzer启动");
+try {
+	fw = new FileWriter(f);
+} catch (IOException e1) {
+	// TODO Auto-generated catch block
+	e1.printStackTrace();
+}
 		
-		while(!entitys.isEmpty()){
+		while(!urls.isEmpty()||!entitys1.isEmpty()||!entitys2.isEmpty()){
 			try {
-				String content = entitys.take();
+				String content = entitys2.take();
 				Movie movie = new Movie();
 				Document doc = Jsoup.parse(content);
 				//电影url
@@ -89,12 +123,21 @@ System.out.println("HTMLAnalyzer启动");
 					
 				movie.setStory(story);
 //System.out.println(story);
-				movies.addElement(movie);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+//				movies.addElement(movie);
+				//写入文件
+//				fw.append("电影 : "+movie.getTitle() + " , 评分 : "+ movie.getRace()+"\r\n");
+				fw.append(movie.toString()+"\r\n");
+System.out.println("写入："+movie.getTitle()+"  当前状态：urls :"+urls.size()+" ,entitys1 :"+entitys1.size()+" ,entitys2 :"+entitys2.size()+" ,usedUrl :"+usedUrls.size());
+				Thread.sleep(space);
+			} catch (Exception e) {
+				System.out.println("页面解析失败");
 			}
 		}
-		
+		try {
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		endGate.countDown();
 System.out.println("HTMLAnalyzer结束");
 		

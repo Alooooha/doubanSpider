@@ -11,9 +11,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
  *
  */
 public class HttpClientUtil {
-	//连接池最大连接数
-	private static final int maxSize = 50 ;
-	
 	
 	private static BasicCookieStore cookieStore ;
 	private static CloseableHttpClient httpClient ;
