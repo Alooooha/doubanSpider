@@ -52,4 +52,19 @@ Version 2.0.0 (17-9-6)
 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间隔3s。同时采用了广度优先遍历算法。
 <br>
 <br>项目逻辑 ：
-
+![image](https://github.com/Alooooha/DoubanSpider/blob/master/img/Version2.0.0.PNG)
+<br>运行时间 : 预计45小时（假设电影数15w([豆瓣一共收录了多少部电影](https://www.zhihu.com/question/20072525))，项目每秒钟请求1次）
+<br>
+<br>使用 :
+<br>运行cc.heroy.douban.core.ategoryMovie.java类即可。
+<br>
+<br>遇到的问题：
+<br>①在测试阶段，我将urls，entitys1，entitys2，分别设置大小为200，200，200。运行过程中出现URLAnalyzer线程出现阻塞的现象，通过在HTMLAnamyzer线程中添加打印容器状态代码后发现，urls达到200后，URLAnalyzer出现阻塞现象，伴随entitys1大小增加到200，URLSpider线程也出现阻塞，因此在网上查询了豆瓣收录电影大致数目后，将容器大小分别设置为40w，20w，20w。
+<br>②出现与开发[proxy_ip](https://github.com/Alooooha/proxy_ip "IP扫描系统")项目一样的难题！HttpClient请求中socket阻塞，引发URLSpider线程假死，导致项目无法发出请求。晚上11点半左右，我测试项目，第二天早上起床的时候，项目已经阻塞，entitys1和entitys2已经空掉，当时已存储有14k多条数据，文件大小15m。
+<br>
+<br>更新前提 :
+<br>Ⅰ.将项目改为web项目
+<br>Ⅱ.添加日志功能
+<br>Ⅲ.使用服务器执行爬虫
+<br>Ⅳ.解决socket阻塞问题(困难)
+<br>Ⅴ.规范代码
