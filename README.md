@@ -84,9 +84,8 @@ Version 2.0.0 (17-9-6)
 <br>线程状态为0，即表示线程阻塞，listner线程会创建新的spider线程替代阻塞线程，并移除旧线程。
 <br>
 <br>数据:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;收集约3.2w条数据
-![image](https://github.com/Alooooha/doubanSpider/blob/master/img/V2d1.png)
-<br>
-![image](https://github.com/Alooooha/doubanSpider/blob/master/img/V2d2.png)
+https://github.com/Alooooha/doubanSpider/blob/master/img/V2d1.png
+<br>https://github.com/Alooooha/doubanSpider/blob/master/img/V2d2.png
 <br>时间:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;25小时左右(期间背电脑来回图书馆，用debug模式停止所有线程，累)
 <br>平均爬虫速率:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1300/小时(我设置的3个爬虫，每个爬虫3s的等待时长，按理讲每秒1条记录，理想下3600/小时,我猜测是线程切换，IO阻塞，请求时间等因素导致效率底)
 <br>数量真实性:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;由于考虑不全，豆瓣的电视剧（如XXX第一季）也被搜集下来了。同时像冷门电影，根本没有标签，基本上不在爬虫范围内。真实性暂时不好说。
