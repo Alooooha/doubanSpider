@@ -19,10 +19,11 @@ import cc.heroy.douban.bean.Movie;
 import cc.heroy.douban.task.HTMLAnalyzer;
 import cc.heroy.douban.task.URLAnalyzer;
 import cc.heroy.douban.task.URLSpider;
+import cc.heroy.douban.task.URLSpiderListener;
 import cc.heroy.douban.util.HttpClientUtil;
 
 /**
- * 功能 ：爬取豆瓣-分类中的电影信息 内容：电影名称，评分，剧情简介 使用技术：HttpClient , 单线程
+ * 功能 ：爬取豆瓣-分类中的电影信息 内容：电影名称，评分，剧情简介 使用技术：HttpClient , 多线程
  */
 public class CategoryMovie {
 
@@ -51,13 +52,13 @@ public class CategoryMovie {
 	// 储存获取的movie对象（理解Vector）
 	Vector<Movie> movies = new Vector<Movie>(200);
 	// 线程池(后期添加线程日志)
-	ExecutorService pool = Executors.newFixedThreadPool(16);
+	ExecutorService pool = Executors.newFixedThreadPool(100);
 	// URLSpider线程数
 	private final int spiderCount = 3;
 	// URLAnalyzer线程数
-	private final int urlAnalyzerCount = 1;
+	private final int urlAnalyzerCount = 2;
 	// HTMLAnalyzer线程数
-	private final int HTMLAnalyzerCount = 1;
+	private final int HTMLAnalyzerCount = 2;
 	
 
 	// URLSpider 的 二元闭锁
@@ -84,7 +85,7 @@ public class CategoryMovie {
 	CountDownLatch urlSpiderStartGate = new CountDownLatch(spiderStartGateNum);
 	CountDownLatch urlSpiderEndGate = new CountDownLatch(spiderEndGateNum);
 	
-	private void spider() {
+	public void spider() {
 
 		// 开始时间
 		long begin_time = System.currentTimeMillis();
@@ -101,8 +102,10 @@ public class CategoryMovie {
 			e1.printStackTrace();
 		}
 		
-		// 同时启动URLAnalyzer和HTMLAnalyzer,URLSpider
+		//创建URLSpider监听任务
+		URLSpiderListener urlSpiderListener = new URLSpiderListener(httpClient, urls, entitys1, entitys2, pool);
 		
+		// 同时启动URLAnalyzer和HTMLAnalyzer,URLSpider
 		for (int i = 0; i < urlAnalyzerCount; i++) {
 			pool.submit(new Thread(new URLAnalyzer(entitys1,entitys2, urls, usedURLS, urlAnalyzerStartGate, urlAnalyzerEndGate)));
 		}
@@ -112,8 +115,13 @@ public class CategoryMovie {
 		}
 		
 		for(int i = 0;i < spiderCount ;i++) {
-			pool.submit(new Thread(new URLSpider(httpClient, urls, entitys1, entitys2, urlSpiderStartGate, urlSpiderEndGate)));
+			URLSpider spider = new URLSpider(httpClient, urls, entitys1, entitys2, urlSpiderStartGate, urlSpiderEndGate);
+			//将spider任务注册到监听器
+			spider.registerListner(urlSpiderListener);
+			pool.submit(new Thread(spider));
 		}
+		
+		
 		
 		try {
 			urlSpiderStartGate.countDown();
@@ -121,9 +129,13 @@ public class CategoryMovie {
 			urlAnalyzerStartGate.countDown();
 			Thread.sleep(5000);
 			HTMLAnalyzerStartGate.countDown();
+			System.out.println("启动监听器");
+			pool.submit(urlSpiderListener);
+			//需要改动！
 			urlSpiderEndGate.await();
 			urlAnalyzerEndGate.await();
 			HTMLAnalyzerEndGate.await();
+			//启动监听器
 			
 			for(Movie m : movies){
 //				System.out.println("爬取到的电影信息 ："+"《"+m.getTitle()+"》"+" 剧情 ："+m.getStory());

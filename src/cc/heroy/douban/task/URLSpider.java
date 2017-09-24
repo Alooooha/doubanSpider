@@ -25,6 +25,8 @@ public class URLSpider implements Runnable{
 	private final BlockingQueue<String> entitys2 ;
 	private final CountDownLatch startGate ;
 	private final CountDownLatch endGate ;
+	//状态监听器
+	private URLSpiderListener listener;
 	String name ;
 	
 	//线程睡眠时间
@@ -37,7 +39,7 @@ public class URLSpider implements Runnable{
 		this.entitys2 = entitys2;
 		this.startGate = startGate;
 		this.endGate = endGate ;
-		name = UUID.randomUUID().toString().substring(0, 2);
+		name = UUID.randomUUID().toString().substring(0, 4);
 	}
 	
 	@Override
@@ -55,6 +57,8 @@ System.out.println("URLSpider启动");
 			try {
 				String url = urls.take();
 				spider(url);
+				//保持活着
+				listener.keepLive(this.name);
 			} catch (InterruptedException e){
 				e.printStackTrace();
 			} catch (ParseException e) {
@@ -84,6 +88,14 @@ System.out.println(name+"提取："+url);
 			Thread.sleep(space);
 				response.close();
 		}
+	
+	//持有UrlSpiderListener引用
+	public void registerListner(URLSpiderListener listener) {
+		this.listener = listener;
+		listener.keepLive(name);
+	}
+	
+	
 		
 }
 

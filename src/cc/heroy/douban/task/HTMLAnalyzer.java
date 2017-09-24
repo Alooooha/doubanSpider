@@ -27,7 +27,7 @@ public class HTMLAnalyzer implements Runnable{
 	private final BlockingQueue<String> entitys2 ;
 	private final CountDownLatch startGate ;
 	private final CountDownLatch endGate ;
-	private final Vector<Movie> movies ;
+//	private final Vector<Movie> movies ;
 	private final BlockingQueue<String> urls;
 	CopyOnWriteArraySet<String> usedUrls = new CopyOnWriteArraySet<>();
 	//线程睡眠时间
@@ -39,7 +39,7 @@ public class HTMLAnalyzer implements Runnable{
 		this.usedUrls = usedUrls;
 		this.startGate = startGate;
 		this.endGate = endGate;
-		this.movies = movies;
+//		this.movies = movies;
 		this.urls = urls;
 	}
 	
@@ -111,23 +111,12 @@ try {
 					if(allhidden!=null&&allhidden.get(0)!=null){
 						story =allhidden.get(0).text();
 					}
-				}
-//System.out.println(story);
-				
-				/*if(hidden!=null&&hidden.get(0)!=null){
-					System.out.println("111111111111111111");
-					story = hidden.get(0).text();
-				}else{*/
-//				}			
-					
+				}	
 					
 				movie.setStory(story);
-//System.out.println(story);
-//				movies.addElement(movie);
-				//写入文件
-//				fw.append("电影 : "+movie.getTitle() + " , 评分 : "+ movie.getRace()+"\r\n");
+
 				fw.append(movie.toString()+"\r\n");
-System.out.println("写入："+movie.getTitle()+"  当前状态：urls :"+urls.size()+" ,entitys1 :"+entitys1.size()+" ,entitys2 :"+entitys2.size()+" ,usedUrl :"+usedUrls.size());
+System.out.println("写入："+movie.getTitle()+"  当前状态：urls :"+urls.size()+" ,entitys1 :"+entitys1.size()+" ,entitys2 :"+entitys2.size()+" ,usedUrl :"+(usedUrls.size()-urls.size()));
 				Thread.sleep(space);
 			} catch (Exception e) {
 				System.out.println("页面解析失败");
